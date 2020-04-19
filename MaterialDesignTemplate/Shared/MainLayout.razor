@@ -1,0 +1,122 @@
+﻿@inherits LayoutComponentBase
+@using System.Diagnostics
+
+
+<MatAppBar Fixed="true">
+    <MatAppBarRow>
+
+        <MatAppBarSection>
+            <MatIconButton OnClick="@((e) => ButtonClicked())" Icon="menu"></MatIconButton>
+            <MatAppBarTitle>Material Design Template</MatAppBarTitle>
+        </MatAppBarSection>
+
+        <MatAppBarSection Align="@MatAppBarSectionAlign.End">
+
+            <MatTooltip Tooltip="Account gegevens" Wrap="true">
+                <MatIconButton Icon="person" OnClick="@OpenPersonal" @ref="PersonalButton"></MatIconButton>
+                <MatMenu @ref="PersonalMenu">
+                    <MatList>
+                        <MatListItem>Wachtwoord wijzigen</MatListItem>
+                        <MatListItem>Theme</MatListItem>
+                        <MatListItem>Item 3</MatListItem>
+                        <MatListItem>Item 4</MatListItem>
+                        <MatListItem>Uitloggen</MatListItem>
+                    </MatList>
+                </MatMenu>
+            </MatTooltip>
+
+            <MaterialDesignTemplate.Pages.ThemeSelection ThemeChanged="@ThemeChangeHandler"></MaterialDesignTemplate.Pages.ThemeSelection>
+            <MaterialDesignTemplate.Pages.ChangePassword></MaterialDesignTemplate.Pages.ChangePassword>
+
+            <MatTooltip Tooltip="Uitloggen" Wrap="true">
+                <MatIconButton Icon="exit_to_app"></MatIconButton>
+            </MatTooltip>
+
+        </MatAppBarSection>
+    </MatAppBarRow>
+</MatAppBar>
+
+<MatAppBarContent Style="width: 100vw; height: 100vh;">
+
+    <MatDrawer @bind-Opened="@Opened" Mode="@MatDrawerMode.Modal">
+
+        <MatNavMenu>
+            <MatNavItem Href="/counter"><MatIcon Icon="plus_one"></MatIcon>&nbsp; Counter </MatNavItem>
+            <MatNavItem Href="/fetchdata"><MatIcon Icon="table_chart"></MatIcon>&nbsp; Fetch Data</MatNavItem>
+            <MatDivider></MatDivider>
+            <MatNavItem Href="/cards"><MatIcon Icon="apps"></MatIcon>&nbsp; Cards</MatNavItem>
+            <MatNavSubMenu>
+                <MatNavSubMenuHeader>
+                    <MatNavItem AllowSelection="false"><MatIcon Icon="explore"></MatIcon>&nbsp; Item 4</MatNavItem>
+                </MatNavSubMenuHeader>
+                <MatNavSubMenuList>
+                    <MatNavItem Disabled="true" Href="#">Item 4.A</MatNavItem>
+                    <MatNavItem>Item 4.B</MatNavItem>
+                    <MatNavItem>Item 4.C</MatNavItem>
+                </MatNavSubMenuList>
+            </MatNavSubMenu>
+            <MatNavItem Href="https://blazorboilerplate.com/">Blazor Boilerplate - Href</MatNavItem>
+            <MatNavItem Href="https://www.matblazor.com/">MatBlazor - Href</MatNavItem>
+        </MatNavMenu>
+
+    </MatDrawer>
+
+    <MatDrawerContent Class="content-background">
+        <div class="content-container">
+            @Body
+        </div>
+    </MatDrawerContent>
+
+</MatAppBarContent>
+
+
+
+
+@code
+{
+    [CascadingParameter]
+    public MatTheme CurrentTheme { get; set; }
+
+
+    private bool Opened = false;
+
+    void ButtonClicked()
+    {
+        Opened = !Opened;
+    }
+
+    BaseMatIconButton PersonalButton;
+    BaseMatMenu PersonalMenu;
+
+    public void OpenPersonal(MouseEventArgs e)
+    {
+        this.PersonalMenu.OpenAsync(PersonalButton.Ref);
+    }
+
+
+    private bool DrawerOpened = false;
+
+    public void DrawerToggleClicked()
+    {
+        DrawerOpened = !DrawerOpened;
+    }
+
+
+
+    void ThemeChangeHandler(MatTheme newTheme)
+    {
+        //copy whole class doesn't work
+        CurrentTheme.Primary = newTheme.Primary;
+        CurrentTheme.Secondary = newTheme.Secondary;
+        CurrentTheme.Background = newTheme.Background;
+        CurrentTheme.Surface = newTheme.Surface;
+        CurrentTheme.OnPrimary = newTheme.OnPrimary;
+        CurrentTheme.OnSecondary = newTheme.OnSecondary;
+        CurrentTheme.OnSurface = newTheme.OnSurface;
+
+        CurrentTheme.ThemeHasChanged();
+    }
+
+
+}
+

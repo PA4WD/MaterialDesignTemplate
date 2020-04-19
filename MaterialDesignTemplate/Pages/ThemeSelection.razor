@@ -1,0 +1,154 @@
+﻿
+@using System.Diagnostics
+
+<MatTooltip Tooltip="Wijzig thema" Wrap="true">
+    <MatIconButton Icon="opacity" OnClick="@OpenDialog"></MatIconButton>
+</MatTooltip>
+
+
+<MatDialog @bind-IsOpen="@dialogIsOpen">
+    <MatDialogTitle>Selecteer thema</MatDialogTitle>
+    <MatDivider></MatDivider>
+    <MatDialogContent>
+
+        <MatRadioGroup @bind-Value="@SelectedTheme" Items="@Themes">
+            <ItemTemplate>
+                <div>
+                    <MatRadioButton Value="@context" >@context</MatRadioButton>
+                </div>
+            </ItemTemplate>
+        </MatRadioGroup>
+
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton OnClick="@CancelClick">Sluiten</MatButton>
+        <MatButton OnClick="@OkClick" Raised="true">Opslaan</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+@code {
+    [Parameter]
+    public EventCallback<MatTheme> ThemeChanged { get; set; }
+
+    private bool dialogIsOpen = false;
+    private string SelectedTheme = "Standaard";
+
+    private string[] Themes = { "Standaard", "Donker", "Blauw", "Groen", "Rood", "Grijs" };
+
+
+    void OpenDialog()
+    {
+        dialogIsOpen = true;
+    }
+
+    void CancelClick()
+    {
+        dialogIsOpen = false;
+    }
+
+    void OkClick()
+    {
+        MatTheme newTheme = new MatTheme();
+
+        switch (SelectedTheme)
+        {
+            case "Standaard":
+                newTheme = DefaultTheme;
+                break;
+            case "Donker":
+                newTheme = DarkTheme;
+                break;
+            case "Blauw":
+                newTheme = BlueTheme;
+                break;
+            case "Groen":
+                newTheme = GreenTheme;
+                break;
+            case "Rood":
+                newTheme = RedTheme;
+                break;
+            case "Grijs":
+                newTheme = GreyTheme;
+                break;
+
+            default:
+                break;
+        }
+
+        this.StateHasChanged();
+        ThemeChanged.InvokeAsync(newTheme);
+
+        dialogIsOpen = false;
+    }
+
+
+    MatTheme DefaultTheme = new MatTheme()
+    {
+        Primary = "#6200EE",
+        Secondary = "#03DAC6",
+        Background = "#FFFFFF",
+        Surface = "#FFFFFF",
+        OnPrimary = "#FFFFFF",
+        OnSecondary = "#000000",
+        OnSurface = "#000000"
+    };
+
+
+    MatTheme DarkTheme = new MatTheme()
+    {
+        Primary = "#BB86FC",
+        Secondary = "#03DAC6",
+        Background = "#121212",
+        //Surface = "#121212",
+        Surface = "#404040",
+        OnPrimary = "#000000",
+        OnSecondary = "#000000",
+        OnSurface = "#FFFFFF"
+    };
+
+    //https://saruwakakun.com/en/material-color
+
+    MatTheme BlueTheme = new MatTheme()
+    {
+        Primary = "#2196F3",
+        Secondary = "#EF5350",
+        Background = "#FFFFFF",
+        Surface = "#FFFFFF",
+        OnPrimary = "#000000",
+        OnSecondary = "#000000",
+        OnSurface = "#000000"
+    };
+
+    MatTheme GreenTheme = new MatTheme()
+    {
+        Primary = "#4CAF50",
+        Secondary = "#FFC107",
+        Background = "#FFFFFF",
+        Surface = "#FFFFFF",
+        OnPrimary = "#000000",
+        OnSecondary = "#000000",
+        OnSurface = "#000000"
+    };
+
+    MatTheme RedTheme = new MatTheme()
+    {
+        Primary = "#F44336",
+        Secondary = "#FFA726",
+        Background = "#FFFFFF",
+        Surface = "#FFFFFF",
+        OnPrimary = "#000000",
+        OnSecondary = "#000000",
+        OnSurface = "#000000"
+    };
+
+    MatTheme GreyTheme = new MatTheme()
+    {
+        Primary = "#607D8B",
+        Secondary = "#FDD835",
+        Background = "#FFFFFF",
+        Surface = "#FFFFFF",
+        OnPrimary = "#000000",
+        OnSecondary = "#000000",
+        OnSurface = "#000000"
+    };
+}

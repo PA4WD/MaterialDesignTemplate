@@ -1,0 +1,92 @@
+﻿@page "/fetchdata"
+
+@using MaterialDesignTemplate.Data
+@inject WeatherForecastService ForecastService
+
+<MatHeadline1>Weather forecast</MatHeadline1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MatTable Items="@forecasts" class="mat-elevation-z5">
+        <MatTableHeader>
+
+            <MatSortHeaderRow SortChanged="@SortData">
+                <th>
+                    <MatSortHeader SortId="date">Date</MatSortHeader>
+                </th>
+                <MatSortHeader SortId="temp-c">Temp. (C)</MatSortHeader>
+                <MatSortHeader SortId="temp-f">Temp. (F)</MatSortHeader>
+                <MatSortHeader SortId="summary">Summary</MatSortHeader>
+            </MatSortHeaderRow>
+
+            @*<MatSortHeaderRow SortChanged="@SortData">
+                <MatSortHeader SortId="date">Date</MatSortHeader>
+            </MatSortHeaderRow>
+            <MatSortHeaderRow SortChanged="@SortData">
+                <MatSortHeader SortId="temp-c">Temp. (C)</MatSortHeader>
+            </MatSortHeaderRow>
+            <MatSortHeaderRow SortChanged="@SortData">
+                <MatSortHeader SortId="temp-f">Temp. (F)</MatSortHeader>
+            </MatSortHeaderRow>
+            <MatSortHeaderRow SortChanged="@SortData">
+                <MatSortHeader SortId="summary">Summary</MatSortHeader>
+            </MatSortHeaderRow>*@
+
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.Date.ToShortDateString()</td>
+            <td>@context.TemperatureC</td>
+            <td>@context.TemperatureF</td>
+            <td>@context.Summary</td>
+        </MatTableRow>
+    </MatTable>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    }
+
+    void SortData(MatSortChangedEvent sort)
+    {
+        if (!(sort == null || sort.Direction == MatSortDirection.None || string.IsNullOrEmpty(sort.SortId)))
+        {
+            Comparison<WeatherForecast> comparison = null;
+            switch (sort.SortId)
+            {
+                case "date":
+                    comparison = (s1, s2) => s1.Date.CompareTo(s2.Date);
+                    break;
+                case "temp-c":
+                    comparison = (s1, s2) => s1.TemperatureC.CompareTo(s2.TemperatureC);
+                    break;
+                case "temp-f":
+                    comparison = (s1, s2) => s1.TemperatureF.CompareTo(s2.TemperatureF);
+                    break;
+                case "summary":
+                    comparison = (s1, s2) => s1.Summary.CompareTo(s2.Summary);
+                    break;
+            }
+            if (comparison != null)
+            {
+                if (sort.Direction == MatSortDirection.Desc)
+                {
+                    Array.Sort(forecasts, (s1, s2) => -1 * comparison(s1, s2));
+                }
+                else
+                {
+                    Array.Sort(forecasts, comparison);
+                }
+            }
+        }
+    }
+}
